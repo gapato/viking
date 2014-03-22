@@ -49,6 +49,12 @@ typedef struct {
   gboolean use_etag;
 
   /**
+   * The USER-AGENT string to use.
+   * Could be NULL.
+   */
+  gchar *user_agent;
+
+  /**
    * The REFERER string to use.
    * Could be NULL.
    */

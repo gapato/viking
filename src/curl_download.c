@@ -167,7 +167,11 @@ int curl_download_uri ( const char *uri, FILE *f, DownloadMapOptions *options, D
       }
     }
   }
-  curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
+  if ((options != NULL) && (options->user_agent != NULL)) {
+    curl_easy_setopt ( curl, CURLOPT_USERAGENT, options->user_agent);
+  } else {
+    curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
+  }
   if ((cookie_file = get_cookie_file(FALSE)) != NULL)
     curl_easy_setopt(curl, CURLOPT_COOKIEFILE, cookie_file);
   res = curl_easy_perform ( curl );

@@ -85,6 +85,7 @@ enum
 
   PROP_HOSTNAME,
   PROP_URL,
+  PROP_USER_AGENT,
   PROP_REFERER,
   PROP_FOLLOW_LOCATION,
   PROP_CHECK_FILE_SERVER_TIME,
@@ -104,6 +105,7 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
 
   priv->hostname = NULL;
   priv->url = NULL;
+  priv->options.user_agent = NULL;
   priv->options.referer = NULL;
   priv->options.follow_location = 0;
   priv->options.check_file = a_check_map_file;
@@ -130,6 +132,8 @@ vik_slippy_map_source_finalize (GObject *object)
   priv->hostname = NULL;
   g_free (priv->url);
   priv->url = NULL;
+  g_free (priv->options.user_agent);
+  priv->options.user_agent = NULL;
   g_free (priv->options.referer);
   priv->options.referer = NULL;
 
@@ -155,6 +159,11 @@ vik_slippy_map_source_set_property (GObject      *object,
     case PROP_URL:
       g_free (priv->url);
       priv->url = g_value_dup_string (value);
+      break;
+
+    case PROP_USER_AGENT:
+      g_free (priv->options.user_agent);
+      priv->options.user_agent = g_value_dup_string (value);
       break;
 
     case PROP_REFERER:
@@ -212,6 +221,10 @@ vik_slippy_map_source_get_property (GObject    *object,
       g_value_set_string (value, priv->url);
       break;
 
+    case PROP_USER_AGENT:
+      g_value_set_string (value, priv->options.user_agent);
+      break;
+
     case PROP_REFERER:
       g_value_set_string (value, priv->options.referer);
       break;
@@ -223,7 +236,7 @@ vik_slippy_map_source_get_property (GObject    *object,
     case PROP_CHECK_FILE_SERVER_TIME:
       g_value_set_boolean (value, priv->options.check_file_server_time);
       break;
-	  
+
     case PROP_USE_ETAG:
       g_value_set_boolean (value, priv->options.use_etag);
       break;
@@ -282,6 +295,13 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	                             "<no-set>" /* default value */,
 	                             G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_URL, pspec);
+
+	pspec = g_param_spec_string ("user-agent",
+	                             "User-Agent",
+	                             "The USER-AGENT string to use in HTTP request",
+	                             NULL /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_USER_AGENT, pspec);
 
 	pspec = g_param_spec_string ("referer",
 	                             "Referer",
